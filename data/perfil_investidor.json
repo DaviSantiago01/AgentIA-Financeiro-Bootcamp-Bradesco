@@ -1,0 +1,54 @@
+{
+  "id": "usuario-001",
+  "nome": "Rafael Barbosa",
+  "idade": 30,
+  "profissao": "Engenheiro Civil",
+  "situacao_financeira": {
+    "renda_mensal": 8500.00,
+    "despesas_mensais": 5100.00,
+    "dividas_atuais": 12500.00,
+    "patrimonio_total": 72000.00,
+    "reserva_emergencia_atual": 18000.00
+  },
+  "perfil_investidor": {
+    "classificacao": "moderado",
+    "nivel_conhecimento": "basico",
+    "tolerancia_risco": "moderada",
+    "aceita_oscilacao": true,
+    "horizonte_investimento": "medio_longo_prazo"
+  },
+  "objetivos": [
+    {
+      "descricao": "Completar reserva de emergência",
+      "valor_meta": 25000.00,
+      "prazo": "2027-02",
+      "prioridade": "alta"
+    },
+    {
+      "descricao": "Juntar entrada para um imóvel",
+      "valor_meta": 90000.00,
+      "prazo": "2030-12",
+      "prioridade": "media"
+    }
+  ],
+  "investimentos_atuais": [
+    {
+      "produto": "CDB",
+      "categoria": "renda_fixa",
+      "valor_investido": 12000.00,
+      "liquidez": "diaria"
+    },
+    {
+      "produto": "Tesouro Selic",
+      "categoria": "titulo_publico",
+      "valor_investido": 6000.00,
+      "liquidez": "conforme_regras_do_produto"
+    },
+    {
+      "produto": "ETF",
+      "categoria": "renda_variavel",
+      "valor_investido": 4000.00,
+      "liquidez": "negociacao_em_bolsa"
+    }
+  ]
+}

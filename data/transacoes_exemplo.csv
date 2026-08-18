@@ -1,0 +1,16 @@
+data,descricao,valor,categoria
+2026-08-01,Salario,3500.00,Receita
+2026-08-02,Aluguel,-1100.00,Moradia
+2026-08-03,Supermercado,-285.40,Alimentacao
+2026-08-04,Transporte,-96.50,Transporte
+2026-08-05,Internet,-99.90,Moradia
+2026-08-06,Netflix,-39.90,Assinaturas
+2026-08-08,Restaurante,-78.00,Alimentacao
+2026-08-10,Academia,-89.90,Saude
+2026-08-12,Freelance,450.00,Receita
+2026-08-14,Supermercado,-198.75,Alimentacao
+2026-08-16,Curso online,-59.90,Educacao
+2026-08-18,Conta de luz,-142.30,Moradia
+2026-08-21,Transporte,-88.00,Transporte
+2026-08-24,Lazer,-120.00,Lazer
+2026-08-28,Reserva financeira,-400.00,Investimentos
