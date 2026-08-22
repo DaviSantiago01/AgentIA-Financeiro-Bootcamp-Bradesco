@@ -1,0 +1,9 @@
+{
+  "name": "finch",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:web": "node scripts/dev.mjs --web",
+    "dev:api": "node scripts/dev.mjs --api"
+  }
+}

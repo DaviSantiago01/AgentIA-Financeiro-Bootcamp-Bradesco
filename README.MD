@@ -41,4 +41,38 @@ A especificação do MVP, o fluxo, a arquitetura, a segurança e as limitações
 
 ## Como executar
 
-O projeto ainda está na fase de planejamento do MVP. As instruções de instalação e execução serão adicionadas após a criação da estrutura inicial.
+### Primeira execução
+
+Pré-requisitos: Node.js e Python 3.11 ou superior.
+
+```powershell
+cd apps/web
+npm install
+
+cd ../api
+py -3.11 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+
+cd ../..
+```
+
+### Desenvolvimento
+
+Inicie frontend e backend juntos a partir da raiz:
+
+```powershell
+npm run dev
+```
+
+Endereços locais:
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://127.0.0.1:8000`
+- Documentação da API: `http://127.0.0.1:8000/docs`
+
+Para iniciar apenas uma parte:
+
+```powershell
+npm run dev:web
+npm run dev:api
+```
