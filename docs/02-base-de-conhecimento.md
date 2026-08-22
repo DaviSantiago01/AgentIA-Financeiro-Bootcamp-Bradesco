@@ -2,34 +2,42 @@
 
 ## Objetivo
 
-Esta base separa conteúdo educativo, dados fictícios de teste e dados dinâmicos do usuário. O Finch usa essas informações para educação financeira e análise descritiva; ele não recomenda compra, venda ou alocação individual de investimentos.
+A pasta `data` reúne a base educacional usada pelo agente e dados fictícios preparados para evoluções futuras. Nenhum arquivo contém dados reais de usuários.
 
 ## Arquivos atuais
 
-| Arquivo | Tipo | Finalidade |
+| Arquivo | Tipo | Uso atual |
 | --- | --- | --- |
-| `data/financas-basicas.md` | Base educacional | Explicar produtos, risco, liquidez, retorno e diversificação. |
-| `data/perfil_investidor.json` | Perfil fictício | Demonstrar o formato de dados de um usuário. |
-| `data/transacoes_exemplo.csv` | Transações fictícias | Testar importação, categorização e análise. |
+| `data/financas-basicas.md` | Base educacional | Enviado integralmente ao modelo em todas as perguntas. |
+| `data/perfil_investidor.json` | Perfil fictício | Exemplo de estrutura; não é carregado pelo agente. |
+| `data/transacoes_exemplo.csv` | Transações fictícias | Exemplo para testes futuros; não é carregado pelo agente. |
 
-## Dados do usuário
+## Funcionamento atual
 
-O perfil reúne dados pessoais, situação financeira, perfil investidor, objetivos e investimentos atuais. No sistema real, o frontend coletará essas informações e o FastAPI as salvará no PostgreSQL. O JSON atual usa dados fictícios para desenvolvimento.
-
-As transações pessoais poderão ser cadastradas manualmente ou enviadas em CSV. O fluxo previsto é:
+O Finch lê `financas-basicas.md` na primeira pergunta e mantém seu conteúdo em cache durante a execução do backend.
 
 ```text
-Dados do usuário → validação no FastAPI → PostgreSQL → resumo financeiro → Finch
+financas-basicas.md → Finch Agent → Ollama Service → qwen3.5:2b
 ```
 
-Extratos reais, senhas, credenciais e arquivos enviados por usuários não devem ser versionados no Git.
+A base aborda planejamento financeiro, risco, retorno, liquidez, diversificação, renda fixa, títulos públicos e renda variável. Ela não contém cotações, taxas ou rentabilidades atuais.
 
-## Uso pelo agente
+O documento completo é adicionado ao contexto de cada pergunta. Isso mantém o MVP simples e transparente, embora aumente o tempo de processamento do modelo local.
 
-Finch recebe apenas o contexto necessário:
+## Dados preparados para o futuro
 
-1. **Perfil:** adapta linguagem, profundidade e cuidados da explicação.
-2. **Base educacional:** explica conceitos e compara produtos.
-3. **Resumo de transações:** apresenta receitas, despesas, categorias e recorrências.
+O perfil e as transações são exemplos fictícios versionados para orientar implementações posteriores. Quando essas funcionalidades existirem, os dados deverão ser coletados pelo frontend, validados pelo FastAPI e armazenados com controle de acesso.
 
-O backend deve fornecer um resumo das transações, e não o extrato bruto completo, para o agente.
+O agente deverá receber apenas um resumo necessário para a pergunta, nunca credenciais ou um extrato completo sem necessidade.
+
+```text
+Dados do usuário → validação → persistência → resumo controlado → Finch
+```
+
+## Segurança e manutenção
+
+- extratos reais, senhas, tokens e credenciais não devem ser versionados;
+- o arquivo `.env` permanece fora do Git;
+- dados fictícios devem ser identificados na documentação;
+- informações que mudam com o tempo devem ser verificadas em fontes oficiais;
+- a base deve ser revisada antes de receber novos produtos ou regras financeiras.

@@ -1,129 +1,105 @@
-# Documentação do Agent
+# Documentação do Agente Finch
 
-## Produto e Caso de Uso
+## Produto e caso de uso
 
-O **Finch** é um agente de consultoria educacional em investimentos e finanças pessoais para pessoas iniciantes. Ele explica conceitos, apresenta alternativas e destaca risco, retorno, liquidez e diversificação em linguagem simples.
+O **Finch** é um agente educacional de investimentos e finanças pessoais para pessoas iniciantes. Ele explica conceitos, riscos e características de produtos financeiros em uma linguagem simples e objetiva.
 
-O Finch apoia o aprendizado e decisões mais conscientes, mas não substitui um profissional certificado, não promete rentabilidade e não indica compra ou venda de investimentos específicos.
+O Finch apoia o aprendizado, mas não substitui um profissional certificado, não promete rentabilidade e não recomenda compra, venda ou alocação individual de investimentos.
 
 ### Problema e público-alvo
 
-Investidores iniciantes podem se sentir sobrecarregados pela quantidade de informações, termos técnicos e opções disponíveis no mercado. O Finch atende pessoas que querem aprender sobre investimentos, mas ainda se sentem intimidadas ou confusas pela complexidade do assunto.
+Pessoas que estão começando a investir podem se sentir sobrecarregadas por termos técnicos, riscos e muitas opções disponíveis. O Finch oferece um ponto inicial para compreender:
 
-### Necessidade do usuário
-
-O usuário precisa entender:
-
-- conceitos financeiros e termos do mercado;
-- diferenças entre opções de investimento;
 - risco, retorno, liquidez e diversificação;
-- cuidados antes de tomar uma decisão financeira.
+- características gerais de investimentos;
+- planejamento financeiro antes de investir;
+- cuidados e limitações relacionados a decisões financeiras.
 
-## Persona do Finch
+## Persona e comunicação
 
-### Nome e tom de voz
+Finch responde em português do Brasil, com linguagem simples, acolhedora e objetiva.
 
-**Finch** é informal, objetivo e levemente sarcástico. Ele usa humor leve para tornar o aprendizado mais envolvente, sem confundir, ridicularizar ou minimizar preocupações financeiras.
+Seus princípios são:
 
-### Princípios de comunicação
+- explicar termos técnicos quando necessário;
+- responder de forma direta, em até 120 palavras e dois parágrafos;
+- usar somente o contexto educacional fornecido;
+- reconhecer quando não possui informação suficiente;
+- não inventar taxas, cotações, garantias ou regras atuais;
+- destacar riscos e limitações relevantes.
 
-- explica conceitos com linguagem simples e direta;
-- evita jargões ou explica seus significados;
-- usa humor leve de forma respeitosa;
-- mantém cuidado diante de perdas, dívidas ou preocupações do usuário;
-- reconhece limites e indica fontes confiáveis quando necessário.
+## Escopo atual do MVP
 
-### Exemplos de resposta
+O MVP possui uma funcionalidade principal: o **chat educacional**.
 
-| Situação | Exemplo de resposta do Finch |
-| --- | --- |
-| Saudação | “E aí, pronto para entender investimentos ou vai continuar só olhando os gráficos como se fossem hieróglifos?” |
-| Explicação | “Liquidez é a facilidade de transformar um investimento em dinheiro. Em resumo: quão rápido você consegue usar esse valor se precisar dele.” |
-| Confirmação | “Boa escolha começar entendendo o básico. Antes de investir, saber onde você está pisando já evita várias decisões por impulso.” |
-| Limitação | “Não tenho informação suficiente para afirmar isso com segurança, mas posso explicar o conceito e indicar como conferir em uma fonte confiável. Afinal, ninguém gosta de decidir no escuro, né?” |
+No chat, o usuário pode perguntar sobre finanças pessoais e investimentos. O Finch usa integralmente `data/financas-basicas.md` como contexto para produzir a resposta.
 
-## Escopo e Fluxo do MVP
+O MVP atual:
 
-O MVP inicial terá duas funcionalidades principais.
+- possui uma interface de chat em Next.js;
+- valida mensagens com FastAPI e Pydantic;
+- gera respostas localmente com Ollama e `qwen3.5:2b`;
+- não armazena mensagens nem mantém histórico entre requisições;
+- não utiliza perfil ou transações do usuário;
+- não possui banco de dados, LangChain, RAG ou busca vetorial.
 
-### Perfil do usuário
-
-O usuário informa dados básicos para que Finch adapte a explicação ao seu contexto:
-
-- objetivo financeiro;
-- prazo pretendido;
-- nível de conhecimento sobre investimentos;
-- tolerância a risco.
-
-O perfil serve apenas para personalizar a experiência educacional; ele não gera recomendações de investimento nem substitui uma análise profissional.
-
-### Chat educacional
-
-No chat, Finch usa o perfil como contexto e pode:
-
-- explicar conceitos e termos financeiros;
-- comparar alternativas de forma didática;
-- esclarecer risco, retorno, liquidez e diversificação;
-- apresentar cuidados antes de uma decisão financeira;
-- informar quando não houver contexto suficiente para responder com segurança.
-
-### Fluxo principal
+## Fluxo principal da conversa
 
 ```text
-Perfil do usuário → Mensagem no chat → Contexto do perfil → Resposta educacional do Finch
+Usuário → Next.js → POST /chat → FastAPI → Finch Agent → Ollama Service → qwen3.5:2b → Resposta
 ```
 
-1. O usuário cria ou atualiza o perfil e envia uma dúvida pelo chat.
-2. Finch recebe a mensagem e usa o perfil apenas para adaptar linguagem e contexto.
-3. Finch identifica o tema e responde de forma simples, educativa e objetiva.
-4. Quando necessário, ele destaca riscos, limites e cuidados relacionados ao assunto.
-5. Se a informação for insuficiente, Finch pede esclarecimentos em vez de inventar uma resposta.
+1. O usuário escreve uma pergunta na interface.
+2. O frontend envia `{ "message": "..." }` diretamente ao FastAPI.
+3. O FastAPI valida a mensagem com `MessageSchema`.
+4. O Finch adiciona o prompt de sistema e a base educacional completa.
+5. O Ollama Service envia o contexto para o modelo local com `think` desativado.
+6. O backend valida a resposta do modelo e a devolve ao frontend.
+7. O frontend apresenta a resposta ou uma mensagem de erro segura.
 
-## Arquitetura Inicial (System Design)
-
-A arquitetura separa a interface, a API, a lógica do agente e a persistência de dados. O frontend não acessa diretamente o banco de dados nem a API do modelo de IA.
-
-![Diagrama da arquitetura inicial do Finch](arquitetura.png)
-
-### Componentes e responsabilidades
+## Arquitetura atual
 
 | Componente | Responsabilidade |
 | --- | --- |
-| Next.js | Exibe perfil e chat no navegador. A API Route encaminha as requisições ao FastAPI sem expor dados sensíveis no cliente. |
-| FastAPI | Valida requisições, coordena o backend e prepara o contexto necessário para o agente. |
-| Serviço de contexto | Consulta perfil e histórico no PostgreSQL e fornece apenas o contexto necessário ao agente. |
-| Agente Finch — LangChain | Organiza instruções, contexto, modelo e ferramentas disponíveis. |
-| Modelo OpenAI | Gera a resposta em linguagem natural; o modelo é definido por configuração. |
-| Ferramentas | São recursos controlados do agente. No MVP, ficam limitadas às regras e ao contexto preparados pelo backend. |
-| PostgreSQL | Armazena perfis, conversas, mensagens e datas de criação ou atualização. |
+| Next.js | Renderiza o chat e usa `fetch` para chamar o FastAPI. |
+| FastAPI | Expõe `/health` e `/chat`, valida a entrada e traduz falhas em respostas HTTP. |
+| Finch Agent | Define comportamento, monta o contexto e carrega a base educacional completa. |
+| Ollama Service | Realiza a comunicação HTTP e valida a resposta do modelo local. |
+| qwen3.5:2b | Gera a resposta em linguagem natural no computador do usuário. |
+| `financas-basicas.md` | Fornece o conhecimento educacional usado em todas as perguntas. |
 
-### Fluxo técnico do chat
+O frontend não usa uma Next.js API Route no MVP. A chamada sai do Client Component diretamente para o FastAPI, com CORS limitado aos endereços locais do frontend.
 
-```text
-Usuário → Next.js → API Route → FastAPI → Perfil e histórico no PostgreSQL → Agente Finch → Modelo OpenAI → FastAPI → Next.js → Usuário
-```
+## Configuração e erros
 
-O agente não acessa o banco diretamente. A base de conhecimento financeira, fontes oficiais, RAG e dados de mercado em tempo real são evoluções futuras e não fazem parte deste MVP.
+As configurações do Ollama são obrigatórias e ficam em `apps/api/.env`, que não é versionado. O repositório fornece apenas `.env.example`.
 
-## Segurança e Limitações
+O backend diferencia:
 
-Finch deve responder de forma educativa e responsável. Quando não houver informação suficiente, ele deve reconhecer a limitação em vez de inventar dados ou apresentar certeza indevida.
+| Código | Significado |
+| --- | --- |
+| `502` | O modelo retornou conteúdo inválido ou incompleto. |
+| `503` | O Ollama local não está disponível. |
+| `504` | O modelo ultrapassou o tempo limite configurado. |
 
-### Regras de segurança
+## Segurança e limitações
 
-- usa perfil e histórico apenas para adaptar a explicação;
-- não inventa dados, fontes, cotações, rentabilidades ou informações de mercado;
-- não apresenta dados como atuais, pois o MVP não consulta mercado em tempo real;
-- pede esclarecimentos quando a pergunta for vaga ou não tiver contexto suficiente;
-- explica riscos, incertezas e cuidados quando forem relevantes;
-- não solicita senhas, cartões, dados de acesso bancário ou credenciais;
-- não expõe o perfil ou histórico de um usuário a outro.
+- O prompt orienta o Finch a não solicitar, validar ou repetir credenciais.
+- O MVP não possui filtro técnico robusto para detectar senha, cartão ou dados bancários antes do envio ao modelo.
+- Dados financeiros reais ou credenciais não devem ser enviados ao chat.
+- O Finch não acessa contas, extratos, cartões nem executa operações financeiras.
+- A base não contém taxas, cotações ou dados de mercado em tempo real.
+- A resposta depende das limitações do modelo local e deve ser tratada como conteúdo educacional.
+- O envio da base completa aumenta a latência; nos testes locais, respostas levaram aproximadamente 50 a 172 segundos.
 
-### O que Finch não faz no MVP
+## Evoluções futuras
 
-- não recomenda compra, venda ou alocação individual em investimentos específicos;
-- não promete rentabilidade ou resultado financeiro;
-- não acessa contas, extratos, cartões ou dados bancários;
-- não executa operações financeiras;
-- não fornece cotações ou dados de mercado em tempo real;
-- não substitui a orientação de um profissional certificado.
+- formulário e persistência do perfil do usuário;
+- importação e resumo de transações;
+- PostgreSQL para usuários, conversas e mensagens;
+- histórico de conversa;
+- recuperação semântica com RAG ou banco vetorial;
+- fontes financeiras atualizadas e ferramentas controladas;
+- validação robusta de dados sensíveis.
+
+O diagrama em [`docs/arquitetura.png`](arquitetura.png) representa essa visão de evolução e inclui componentes que ainda não fazem parte do MVP funcional.

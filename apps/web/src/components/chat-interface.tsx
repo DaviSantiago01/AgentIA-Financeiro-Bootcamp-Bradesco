@@ -23,7 +23,25 @@ const initialMessages: Message[] = [
   },
 ];
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+async function getApiErrorMessage(response: Response): Promise<string> {
+  try {
+    const data: unknown = await response.json();
+    if (
+      typeof data === "object" &&
+      data !== null &&
+      "detail" in data &&
+      typeof data.detail === "string"
+    ) {
+      return data.detail;
+    }
+  } catch {
+    // A resposta não possui um corpo JSON aproveitável.
+  }
+
+  return "Não foi possível processar a mensagem agora.";
+}
 
 export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -47,6 +65,10 @@ export function ChatInterface() {
     setIsSending(true);
 
     try {
+      if (!apiBaseUrl) {
+        throw new Error("A comunicação com o Finch não foi configurada.");
+      }
+
       const response = await fetch(`${apiBaseUrl}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,7 +76,7 @@ export function ChatInterface() {
       });
 
       if (!response.ok) {
-        throw new Error("Não foi possível processar a mensagem.");
+        throw new Error(await getApiErrorMessage(response));
       }
 
       const data: { message: string } = await response.json();
@@ -62,13 +84,16 @@ export function ChatInterface() {
         ...currentMessages,
         { id: Date.now() + 1, author: "finch", content: data.message },
       ]);
-    } catch {
+    } catch (error) {
       setMessages((currentMessages) => [
         ...currentMessages,
         {
           id: Date.now() + 1,
           author: "finch",
-          content: "Não foi possível conectar ao Finch agora. Tente novamente em instantes.",
+          content:
+            error instanceof Error
+              ? error.message
+              : "Não foi possível conectar ao Finch agora. Tente novamente em instantes.",
         },
       ]);
     } finally {
